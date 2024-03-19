@@ -59,13 +59,13 @@ rnn_layers = 2
 num_classes = 10
 
 # Create model instance
-model = WaveNet(cnn_channels, rnn_hidden_size, rnn_layers, num_classes)
+model = WaveNet(64, 128, 2, 10)
 
 # Example input
 batch_size = 32
 sequence_length = 100
 input_channels = 1
-input_data = torch.randn(batch_size, input_channels, sequence_length)
+input_data = torch.randn(32,1,)
 
 # Forward pass
 output = model(input_data)
