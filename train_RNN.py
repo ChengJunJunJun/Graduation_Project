@@ -48,7 +48,7 @@ for epoch in range(200):
     print(f'Epoch [{epoch+1}/200], train Loss: {train_loss}')
 
 
-    if epoch % 10 == 0:
+    if (epoch + 1) % 10 == 0:
         model.eval() 
         test_loss = 0
         for i in range(200):
