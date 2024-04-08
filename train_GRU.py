@@ -4,14 +4,12 @@ import torch.optim as optim
 import numpy as np
 from models.crnn import GRUnet as GRUnet
 
-
-model = GRUnet().to('cuda')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = GRUnet().to(device)
 loss_fn = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), 0.001)
 
-eta00 = np.load('data/6000_1s_data_eta00.npy')
-# 选取第20个角度的第100到200个所有的时序数据；
-data = eta00[:,20,100:200]
+data = np.load('data/chengjun.npy')
 
 for epoch in range(200):
     
@@ -27,8 +25,8 @@ for epoch in range(200):
         Y = np.expand_dims(Y, axis=0)
 
 
-        X_tensor = torch.Tensor(X).to('cuda')
-        Y_tensor = torch.Tensor(Y).to('cuda')
+        X_tensor = torch.Tensor(X).to(device)
+        Y_tensor = torch.Tensor(Y).to(device)
         output = model(X_tensor)
 
         loss = loss_fn(output, Y_tensor)
@@ -60,8 +58,8 @@ for epoch in range(200):
             Y = np.expand_dims(Y, axis=0)
 
 
-            X_tensor = torch.Tensor(X).to('cuda')
-            Y_tensor = torch.Tensor(Y).to('cuda')
+            X_tensor = torch.Tensor(X).to(device)
+            Y_tensor = torch.Tensor(Y).to(device)
             output = model(X_tensor)
             
             loss = loss_fn(output, Y_tensor)
@@ -73,4 +71,4 @@ for epoch in range(200):
         print(f'Epoch [{epoch+1}/200], test Loss: {test_loss}')
         print('-------------------------------------------')
 
-torch.save(model.state_dict(), 'checkpoints/GRUnet_model_parameters.pth_0.001')
+torch.save(model.state_dict(), 'checkpoints/GRU_0.001.pth')
