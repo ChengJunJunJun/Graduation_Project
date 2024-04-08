@@ -18,7 +18,7 @@ for epoch in range(200):
     model.train()
     train_loss = 0
     
-    for i in range(40000):
+    for i in range(4000):
         X = data[0+i:30+i]
 
 
@@ -43,7 +43,7 @@ for epoch in range(200):
 
         optimizer.step()
 
-    train_loss =  train_loss / 40000
+    train_loss =  train_loss / 4000
 
     print(f'Epoch [{epoch+1}/200], train Loss: {train_loss}')
 
@@ -51,11 +51,11 @@ for epoch in range(200):
     if epoch % 10 == 0:
         model.eval() 
         test_loss = 0
-        for i in range(15000):
-            X = data[40060+i:40090+i]
+        for i in range(1500):
+            X = data[4060+i:4090+i]
 
 
-            Y = data[40090+i:40120+i]
+            Y = data[4090+i:4120+i]
             X = np.expand_dims(X, axis=0)
             Y = np.expand_dims(Y, axis=0)
 
@@ -67,7 +67,7 @@ for epoch in range(200):
             loss = loss_fn(output, Y_tensor)
 
             test_loss += loss.item()
-        test_loss = test_loss / 15000
+        test_loss = test_loss / 1500
 
         print('-------------------------------------------')
         print(f'Epoch [{epoch+1}/200], test Loss: {test_loss}')
