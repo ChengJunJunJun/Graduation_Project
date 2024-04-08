@@ -9,9 +9,8 @@ model = CNNnet().to('cuda')
 loss_fn = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), 0.001)
 
-eta00 = np.load('data/6000_1s_data_eta00.npy')
-# 选取第20个角度的第100到200个所有的时序数据；
-data = eta00[:,20,100:200]
+data = np.load('data/chengjun.npy')
+
 
 for epoch in range(200):
     

@@ -4,14 +4,14 @@ import torch.optim as optim
 import numpy as np
 from models.crnn import CRNNnet as CRNNnet
 
-model = CRNNnet().to('cuda')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = CRNNnet().to(device)
 loss_fn = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), 0.001)
 
-eta00 = np.load('data/6000_1s_data_eta00.npy')
+data = np.load('data/chengjun.npy')
 
-# 选取第20个角度的第100到200个所有的时序数据；
-data = eta00[:,20,100:200]
+
 
 for epoch in range(200):
     
@@ -27,8 +27,8 @@ for epoch in range(200):
         Y = np.expand_dims(Y, axis=0)
 
 
-        X_tensor = torch.Tensor(X).to('cuda').permute(0,2,1)
-        Y_tensor = torch.Tensor(Y).to('cuda')
+        X_tensor = torch.Tensor(X).to(device).permute(0,2,1)
+        Y_tensor = torch.Tensor(Y).to(device)
         output = model(X_tensor)
 
         loss = loss_fn(output, Y_tensor)
@@ -60,8 +60,8 @@ for epoch in range(200):
             Y = np.expand_dims(Y, axis=0)
 
 
-            X_tensor = torch.Tensor(X).to('cuda').permute(0,2,1)
-            Y_tensor = torch.Tensor(Y).to('cuda')
+            X_tensor = torch.Tensor(X).to(device).permute(0,2,1)
+            Y_tensor = torch.Tensor(Y).to(device)
             output = model(X_tensor)
             
             loss = loss_fn(output, Y_tensor)
@@ -73,4 +73,4 @@ for epoch in range(200):
         print(f'Epoch [{epoch+1}/3000], test Loss: {test_loss}')
         print('-------------------------------------------')
 
-torch.save(model.state_dict(), 'checkpoints/CRNNnet_model_parameters.pth')
+torch.save(model.state_dict(), 'checkpoints/CRNN_0.001.pth')

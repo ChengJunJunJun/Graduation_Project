@@ -123,6 +123,7 @@ class GRUnet(nn.Module):
 
 
 if __name__ == '__main__':
-    model = CNNnet().to('cuda')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = CNNnet().to(device)
     from torchinfo import summary
     summary(model, input_size=[1,100,30])
