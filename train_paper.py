@@ -23,6 +23,7 @@ class LSTMModel(nn.Module):
         self.lstm1 = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.lstm2 = nn.LSTM(32, hidden_size, num_layers, batch_first=True)
         self.fc1 = nn.Linear(32, 32)
+        self.fc3 = nn.Linear(32, 32)
         self.fc2 = nn.Linear(32, 1)
 
     def forward(self, x):
@@ -35,7 +36,7 @@ class LSTMModel(nn.Module):
         residual = out
         out = self.fc1(out)
         out = F.relu(out)
-        out = self.fc1(out)
+        out = self.fc3(out)
         out = F.relu(out)
         # 残差连接
         out += residual
