@@ -18,17 +18,17 @@ for epoch in range(200):
     model.train()
     train_loss = 0
     
-    for i in range(131):
-        X = data[0+i*100:1000+i*100]
+    for i in range(4000):
+        X = data[0+i:30+i]
 
 
-        Y = data[1000+i*100:2000+i*100]
+        Y = data[30+i:60+i]
         X = np.expand_dims(X, axis=0)
         Y = np.expand_dims(Y, axis=0)
 
 
-        X_tensor = torch.Tensor(X).to(device).permute(0,2,1)
-        Y_tensor = torch.Tensor(Y).to(device)
+        X_tensor = torch.Tensor(X).to('cuda').permute(0,2,1)
+        Y_tensor = torch.Tensor(Y).to('cuda')
         output = model(X_tensor)
 
         loss = loss_fn(output, Y_tensor)
@@ -43,34 +43,34 @@ for epoch in range(200):
 
         optimizer.step()
 
-    train_loss =  train_loss / 150
+    train_loss =  train_loss / 4000
 
-    print(f'Epoch [{epoch+1}/200], train Loss: {train_loss}')
+    print(f'Epoch [{epoch+1}/3000], train Loss: {train_loss}')
 
 
     if (epoch + 1) % 10 == 0:
         model.eval() 
         test_loss = 0
-        for i in range(31):
-            X = data[15000+i*100:16000+i*100]
+        for i in range(1500):
+            X = data[4060+i:4090+i]
 
 
-            Y = data[16000+i*100:17000+i*100]
+            Y = data[4090+i:4120+i]
             X = np.expand_dims(X, axis=0)
             Y = np.expand_dims(Y, axis=0)
 
 
-            X_tensor = torch.Tensor(X).to(device).permute(0,2,1)
-            Y_tensor = torch.Tensor(Y).to(device)
+            X_tensor = torch.Tensor(X).to('cuda').permute(0,2,1)
+            Y_tensor = torch.Tensor(Y).to('cuda')
             output = model(X_tensor)
             
             loss = loss_fn(output, Y_tensor)
 
             test_loss += loss.item()
-        test_loss = test_loss / 31
+        test_loss = test_loss / 1500
 
         print('-------------------------------------------')
-        print(f'Epoch [{epoch+1}/200], test Loss: {test_loss}')
+        print(f'Epoch [{epoch+1}/3000], test Loss: {test_loss}')
         print('-------------------------------------------')
 
-torch.save(model.state_dict(), 'checkpoints/CRNN_0.001.pth')
+torch.save(model.state_dict(), 'checkpoints/CRNNnet_model_parameters.pth')
