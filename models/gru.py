@@ -18,8 +18,8 @@ class GruNet(nn.Module):
         self.rnn = nn.GRU(
             input_size=input_size,
             hidden_size=hidden_size,
-            num_layers=1,
-            batch_first=True,
+            num_layers=2,
+            batch_first=False,
         )
         self.linear = nn.Linear(hidden_size, output_size)
 
@@ -35,8 +35,8 @@ class GruNet(nn.Module):
 if __name__ == '__main__':
     X = torch.randn(320,10,1)
     # hidden_prev = torch.randn(1,20,16)
-    model = GruNet(input_size=1, hidden_size=256, output_size=1)
+    model = GruNet(input_size=1, hidden_size=16, output_size=1)
     pred = model(X)
     print(model)
-    summary(model, input_size=[320, 10, 1])
+    summary(model, input_size=[100, 1000, 1])
 
