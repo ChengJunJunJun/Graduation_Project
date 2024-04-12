@@ -9,7 +9,7 @@ model = CRNNnet().to(device)
 loss_fn = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), 0.001)
 
-data = np.load('data/chengjun.npy')
+data = np.load('data/chengjun_new.npy')
 
 
 
@@ -18,11 +18,11 @@ for epoch in range(200):
     model.train()
     train_loss = 0
     
-    for i in range(800):
-        X = data[i*60:i*60+30]
+    for i in range(131):
+        X = data[0+i*100:1000+i*100]
 
 
-        Y = data[i*60+30:i*60+60]
+        Y = data[1000+i*100:2000+i*100]
         X = np.expand_dims(X, axis=0)
         Y = np.expand_dims(Y, axis=0)
 
@@ -43,7 +43,7 @@ for epoch in range(200):
 
         optimizer.step()
 
-    train_loss =  train_loss / 800
+    train_loss =  train_loss / 150
 
     print(f'Epoch [{epoch+1}/200], train Loss: {train_loss}')
 
@@ -51,11 +51,11 @@ for epoch in range(200):
     if (epoch + 1) % 10 == 0:
         model.eval() 
         test_loss = 0
-        for i in range(200):
-            X = data[48000 + (i*60):48000 + (i*60) +30]
+        for i in range(31):
+            X = data[15000+i*100:16000+i*100]
 
 
-            Y = data[48000 + (i*60) +30:48000 + (i*60) +60]
+            Y = data[16000+i*100:17000+i*100]
             X = np.expand_dims(X, axis=0)
             Y = np.expand_dims(Y, axis=0)
 
@@ -67,7 +67,7 @@ for epoch in range(200):
             loss = loss_fn(output, Y_tensor)
 
             test_loss += loss.item()
-        test_loss = test_loss / 200
+        test_loss = test_loss / 31
 
         print('-------------------------------------------')
         print(f'Epoch [{epoch+1}/200], test Loss: {test_loss}')
