@@ -38,12 +38,13 @@ g = 9.8
 
 # range_omega(H0, T0, start_omega, end_omega)
 eta00 = np.zeros([T, 100])
-z = np.zeros([100])
+
 M = 60
 delta_w = (end_omega - start_omega) / M
 w = np.linspace(start_omega, end_omega, M)
 
 for t in range(T):
+    z = np.zeros([100])
     for i in range(M-1):
         x = np.linspace(1, 100, 100)
         w_i = random.uniform(w[i], w[i + 1])
