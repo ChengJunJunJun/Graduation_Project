@@ -9,7 +9,7 @@ model = GruNet(input_size=1, hidden_size=16, output_size=1).to(device)
 loss_fn = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), 0.001)
 
-data = np.load('data/chengjun_new.npy')
+data = np.load('data/chengjun_4.13.npy')
 
 for epoch in range(200):
     
@@ -20,12 +20,12 @@ for epoch in range(200):
         X = data[0+i*100:1000+i*100]
 
 
-        Y = data[1000+i*100:2000+i*100]
+        Y = data[1000+i*100]
         X = np.expand_dims(X, axis=2)
-        Y = np.expand_dims(Y, axis=2)
+        Y = np.expand_dims(Y, axis=1)
 
 
-        X_tensor = torch.Tensor(X).to(device)
+        X_tensor = torch.Tensor(X).to(device).permute(1,0,2)
         Y_tensor = torch.Tensor(Y).to(device)
         output = model(X_tensor)
 
@@ -53,12 +53,12 @@ for epoch in range(200):
             X = data[15000+i*100:16000+i*100]
 
 
-            Y = data[16000+i*100:17000+i*100]
+            Y = data[16000+i*100]
             X = np.expand_dims(X, axis=2)
-            Y = np.expand_dims(Y, axis=2)
+            Y = np.expand_dims(Y, axis=1)
 
 
-            X_tensor = torch.Tensor(X).to(device)
+            X_tensor = torch.Tensor(X).to(device).permute(1,0,2)
             Y_tensor = torch.Tensor(Y).to(device)
             output = model(X_tensor)
             
