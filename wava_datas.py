@@ -41,14 +41,15 @@ eta00 = np.zeros([T, 100])
 
 M = 60
 delta_w = (end_omega - start_omega) / M
-w = np.linspace(start_omega, end_omega, M)
-
+w = np.linspace(start_omega, end_omega, M+1)
+epsilon_ran = np.linspace(0, 2*np.pi, M)
+np.random.shuffle(epsilon_ran)
 for t in range(T):
     z = np.zeros([100])
-    for i in range(M-1):
+    for i in range(M):
         x = np.linspace(1, 100, 100)
         w_i = random.uniform(w[i], w[i + 1])
-        phi_i = random.uniform(0, 2 * math.pi)
+        phi_i = epsilon_ran[i]
         k_i = w_i**2/g
         a_i = (2 * delta_w * s(w_i, T0, H0)) ** 0.5
         z += a_i * np.cos(k_i * x - w_i * t + phi_i)
