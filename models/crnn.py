@@ -22,7 +22,7 @@ class CRNNnet(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool1d(kernelSize, stride = 1) 
         )
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout()
         self.fc = nn.Linear(22, kindsOutput)
 
         self.rnn = nn.GRU(
@@ -67,7 +67,6 @@ class CNNnet(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool1d(kernelSize, stride = 1) 
         )
-        self.dropout = nn.Dropout(0.2)
         self.fc = nn.Linear(32, kindsOutput)
 
     def forward(self,x):
@@ -76,7 +75,6 @@ class CNNnet(nn.Module):
         x = self.layer2(x)
         x = x.permute(0, 2, 1)
         x = self.fc(x)
-        x = self.dropout(x)
         return x
     
 class RNNnet(nn.Module):
@@ -121,9 +119,29 @@ class GRUnet(nn.Module):
         return out
 
 
+class LSTMnet(nn.Module):
+    def __init__(self, input_size = 100, hidden_size = 256, outputsize = 100):
+        super().__init__() 
+
+        self.rnn = nn.LSTM(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=1,
+            batch_first=True,
+        )
+        for p in self.rnn.parameters():
+            nn.init.normal_(p, mean=0.0, std=0.001)   # 对参数进行初值化
+
+        self.linear = nn.Linear(hidden_size, outputsize)
+
+    def forward(self, x):
+        out, _ = self.rnn(x)  
+        out = self.linear(out)
+        return out
+
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = CNNnet().to(device)
+    model = LSTMnet().to(device)
     from torchinfo import summary
-    summary(model, input_size=[1,100,30])
+    summary(model, input_size=[1,30,100])
