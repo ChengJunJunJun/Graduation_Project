@@ -116,4 +116,4 @@ for epoch in range(200):
         print('test Correlation Coefficient:', test_corr_coef/1500)
         print('-------------------------------------------')
 
-torch.save(model.state_dict(), 'checkpoints/RNN_0.01.pth')
+torch.save(model.state_dict(), 'checkpoints/CRNN_0.01.pth')
