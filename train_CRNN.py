@@ -2,8 +2,22 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-from models.crnn import CRNNnet as CRNNnet
+from models.crnn import CRNNnet , CLSTMnet
+import wandb
 
+# start a new wandb run to track this script
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="CRNN_pridict_waveheight",
+
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": 0.001,
+    "architecture": "CRNN",
+    "dataset": "6000_100.npy",
+    "epochs": 200,
+    }
+)
 # 均方根误差
 def rmse(predictions, targets):
     return torch.sqrt(torch.mean((predictions - targets) ** 2))
@@ -21,7 +35,7 @@ model = CRNNnet().to(device)
 loss_fn = nn.MSELoss()
 criterion_mae = nn.L1Loss()
 
-optimizer = optim.Adam(model.parameters(), 0.01)
+optimizer = optim.Adam(model.parameters(), 0.001)
 
 data = np.load('data/6000_100.npy')
 
@@ -36,10 +50,10 @@ for epoch in range(200):
     train_corr_coef = 0
     
     for i in range(4000):
-        X = data[0+i:30+i]
+        X = data[0+i:60+i]
 
 
-        Y = data[30+i:60+i]
+        Y = data[60+i:120+i]
         X = np.expand_dims(X, axis=0)
         Y = np.expand_dims(Y, axis=0)
 
@@ -76,18 +90,22 @@ for epoch in range(200):
     print('RMSE Loss:', train_loss_rmse/4000)
     print('Correlation Coefficient:', train_corr_coef/4000)
 
+    # log metrics to wandb
+    wandb.log({"train MSE Loss": train_loss})
 
-    if (epoch + 1) % 10 == 0:
+
+
+    if (epoch + 1) % 4 == 0:
         model.eval() 
         test_loss_mse = 0
         test_loss_mae = 0
         test_loss_rmse = 0
         test_corr_coef = 0
         for i in range(1500):
-            X = data[4060+i:4090+i]
+            X = data[4120+i:4180+i]
 
 
-            Y = data[4090+i:4120+i]
+            Y = data[4180+i:4240+i]
             X = np.expand_dims(X, axis=0)
             Y = np.expand_dims(Y, axis=0)
 
@@ -115,5 +133,9 @@ for epoch in range(200):
         print('test RMSE Loss:', test_loss_rmse/1500)
         print('test Correlation Coefficient:', test_corr_coef/1500)
         print('-------------------------------------------')
+        wandb.log({"test MSE Loss": test_loss})
 
-torch.save(model.state_dict(), 'checkpoints/CRNN_0.01.pth')
+torch.save(model.state_dict(), 'checkpoints/CRNN_0.01_60.pth')
+
+# [optional] finish the wandb run, necessary in notebooks
+wandb.finish()

@@ -23,7 +23,7 @@ class CRNNnet(nn.Module):
             nn.MaxPool1d(kernelSize, stride = 1) 
         )
         self.dropout = nn.Dropout()
-        self.fc = nn.Linear(22, kindsOutput)
+        self.fc = nn.Linear(52, 60)
 
         self.rnn = nn.GRU(
             input_size=32,
@@ -49,6 +49,50 @@ class CRNNnet(nn.Module):
         out = self.linear(out)
         return out
     
+
+class CLSTMnet(nn.Module):
+    def __init__(self,  inputLength = 30, kernelSize = 3, kindsOutput = 30):
+        super().__init__()
+        filterNum1 = 64
+        filterNum2 = 32 
+        self.layer1 = nn.Sequential(
+            nn.Conv1d(100, filterNum1, kernelSize), 
+            nn.BatchNorm1d(filterNum1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool1d(kernelSize, stride = 1) 
+        )
+        self.layer2 = nn.Sequential(
+            nn.Conv1d(filterNum1, filterNum2, kernelSize),
+            nn.BatchNorm1d(filterNum2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool1d(kernelSize, stride = 1) 
+        )
+        self.dropout = nn.Dropout()
+        self.fc = nn.Linear(52, 60)
+
+        self.rnn = nn.LSTM(
+            input_size=32,
+            hidden_size=64,
+            num_layers=1,
+            batch_first=True,
+        )
+
+        for p in self.rnn.parameters():
+            nn.init.normal_(p, mean=0.0, std=0.001)  
+
+        self.linear = nn.Linear(64, 100)
+    
+    def forward(self,x):
+        x = x.to(torch.float32)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        # x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        x = self.dropout(x)
+        x = x.permute(0,2,1)
+        out, _ = self.rnn(x)  # [b, seq, h]
+        out = self.linear(out)
+        return out
 
 class CNNnet(nn.Module):
     def __init__(self, *, inputLength = 30, kernelSize = 3, kindsOutput = 100):
@@ -142,6 +186,6 @@ class LSTMnet(nn.Module):
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = LSTMnet().to(device)
+    model = CLSTMnet().to(device)
     from torchinfo import summary
-    summary(model, input_size=[1,30,100])
+    summary(model, input_size=[1,100,60])

@@ -3,6 +3,21 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from models.crnn import RNNnet , GRUnet, LSTMnet
+import wandb
+
+# start a new wandb run to track this script
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="RNN_pridict_waveheight_3",
+
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": 0.01,
+    "architecture": "RNN",
+    "dataset": "6000_100.npy",
+    "epochs": 200,
+    }
+)
 
 
 # 均方根误差
@@ -36,10 +51,10 @@ for epoch in range(200):
     train_corr_coef = 0
     
     for i in range(4000):
-        X = data[0+i:30+i]
+        X = data[0+i:60+i]
 
 
-        Y = data[30+i:60+i]
+        Y = data[60+i:120+i]
         X = np.expand_dims(X, axis=0)
         Y = np.expand_dims(Y, axis=0)
 
@@ -75,7 +90,8 @@ for epoch in range(200):
     print('MAE Loss:', train_loss_mae/4000)
     print('RMSE Loss:', train_loss_rmse/4000)
     print('Correlation Coefficient:', train_corr_coef/4000)
-
+    # log metrics to wandb
+    wandb.log({"train MSE Loss": train_loss})
 
     if (epoch + 1) % 10 == 0:
         model.eval() 
@@ -84,10 +100,10 @@ for epoch in range(200):
         test_loss_rmse = 0
         test_corr_coef = 0
         for i in range(1500):
-            X = data[4060+i:4090+i]
+            X = data[4120+i:4180+i]
 
 
-            Y = data[4090+i:4120+i]
+            Y = data[4180+i:4240+i]
             X = np.expand_dims(X, axis=0)
             Y = np.expand_dims(Y, axis=0)
 
@@ -115,5 +131,9 @@ for epoch in range(200):
         print('test RMSE Loss:', test_loss_rmse/1500)
         print('test Correlation Coefficient:', test_corr_coef/1500)
         print('-------------------------------------------')
+        # log metrics to wandb
+        wandb.log({"test MSE Loss": test_loss})
+torch.save(model.state_dict(), 'checkpoints/RNN_0.01_60.pth')
 
-torch.save(model.state_dict(), 'checkpoints/RNN_0.01.pth')
+# [optional] finish the wandb run, necessary in notebooks
+wandb.finish()
