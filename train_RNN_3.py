@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-from models.crnn import RNNsnet , GRUnet, LSTMnet
+from models.crnn import RNNnet , GRUnet, LSTMnet
 
 
 # 均方根误差
@@ -77,7 +77,7 @@ for epoch in range(200):
     print('Correlation Coefficient:', train_corr_coef/4000)
 
 
-    if epoch % 10 == 0:
+    if (epoch + 1) % 10 == 0:
         model.eval() 
         test_loss_mse = 0
         test_loss_mae = 0
